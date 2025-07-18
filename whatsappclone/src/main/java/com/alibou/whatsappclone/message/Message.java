@@ -1,5 +1,6 @@
 package com.alibou.whatsappclone.message;
 
+import com.alibou.whatsappclone.chat.Chat;
 import com.alibou.whatsappclone.common.BaseAuditingEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,9 @@ public class Message extends BaseAuditingEntity {
     private MessageType type;
     @Enumerated(EnumType.STRING)
     private MessageState state;
+    @ManyToOne
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
     @Column(name = "sender_id", nullable = false)
     private String senderId;
     @Column(name = "receiver_id", nullable = false)
