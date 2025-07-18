@@ -1,4 +1,4 @@
-package com.alibou.whatsappclone;
+package com.alibou.whatsappclone.security;
 
 import io.micrometer.common.lang.NonNull;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
