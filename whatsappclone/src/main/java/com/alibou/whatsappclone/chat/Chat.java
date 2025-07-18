@@ -1,12 +1,15 @@
 package com.alibou.whatsappclone.chat;
 
 import com.alibou.whatsappclone.common.BaseAuditingEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.alibou.whatsappclone.message.Message;
+import com.alibou.whatsappclone.user.User;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,7 +18,12 @@ import lombok.Setter;
 @Entity
 @Table(name = "chat")
 public class Chat extends BaseAuditingEntity {
-    @Id
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+    private User sender;
+    private User receiver;
+    private List<Message> messages;
+
 }
