@@ -41,9 +41,10 @@ public class MessageService {
                 .orElseThrow(() -> new EntityNotFoundException("Chat not found"));
 
         final String receiverId = getReceiverId(chat, authentication);
+        messageRepository.setMessagesToSeen(chatId, MessageState.SEEN);
     }
     private String getReceiverId(Chat chat, Authentication authentication){
-        if(chat.getSender().equals(authentication.getName())){
+        if(chat.getSender().getId().equals(authentication.getName())){
             return chat.getReceiver().getId();
         }
         return chat.getSender().getId();
