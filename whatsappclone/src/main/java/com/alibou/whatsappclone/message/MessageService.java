@@ -57,7 +57,7 @@ public class MessageService {
         final String senderId = getSenderId(chat, authentication);
         final String receiverId = getReceiverId(chat, authentication);
 
-        final String filePath = FileService.saveFile(file, senderId);
+        final String filePath = fileService.saveFile(file, senderId);
         Message message = new Message();
         message.setChat(chat);
         message.setSenderId(senderId);
