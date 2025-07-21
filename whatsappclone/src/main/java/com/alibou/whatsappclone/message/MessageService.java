@@ -2,10 +2,13 @@ package com.alibou.whatsappclone.message;
 
 import com.alibou.whatsappclone.chat.Chat;
 import com.alibou.whatsappclone.chat.ChatRepository;
+import com.alibou.whatsappclone.file.FileService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -15,6 +18,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final ChatRepository chatRepository;
     private final MessageMapper mapper;
+    private final FileService fileService;
 
     public void saveMessage(MessageRequest messageRequest) {
         Chat chat = chatRepository.findById(messageRequest.getChatId())
@@ -36,17 +40,45 @@ public class MessageService {
                 .map(mapper::toMessageResponse)
                 .toList();
     }
+    @Transactional
     public void setMessagesToSeen(String chatId, Authentication authentication){
         Chat chat = chatRepository.findById(chatId)
                 .orElseThrow(() -> new EntityNotFoundException("Chat not found"));
 
-        final String receiverId = getReceiverId(chat, authentication);
+//        final String receiverId = getReceiverId(chat, authentication);
         messageRepository.setMessagesToSeen(chatId, MessageState.SEEN);
 
-        //todo notification`
+        //todo notification
     }
-    private String getReceiverId(Chat chat, Authentication authentication){
-        if(chat.getSender().getId().equals(authentication.getName())){
+
+    public void uploadMediaMessage(String chatId, MultipartFile file, Authentication authentication){
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new EntityNotFoundException("Chat not found"));
+        final String senderId = getSenderId(chat, authentication);
+        final String receiverId = getReceiverId(chat, authentication);
+
+        final String filePath = FileService.saveFile(file, senderId);
+        Message message = new Message();
+        message.setChat(chat);
+        message.setSenderId(senderId);
+        message.setReceiverId(receiverId);
+        message.setType(MessageType.IMAGE);
+        message.setState(MessageState.SENT);
+        message.setMediaFilePath(filePath);
+        messageRepository.save(message);
+
+        //todo notification
+    }
+
+    private String getSenderId(Chat chat, Authentication authentication) {
+        if (chat.getSender().getId().equals(authentication.getName())) {
+            return chat.getSender().getId();
+        }
+        return chat.getReceiver().getId();
+    }
+
+    private String getReceiverId(Chat chat, Authentication authentication) {
+        if (chat.getSender().getId().equals(authentication.getName())) {
             return chat.getReceiver().getId();
         }
         return chat.getSender().getId();
