@@ -42,6 +42,8 @@ public class MessageService {
 
         final String receiverId = getReceiverId(chat, authentication);
         messageRepository.setMessagesToSeen(chatId, MessageState.SEEN);
+
+        //todo notification`
     }
     private String getReceiverId(Chat chat, Authentication authentication){
         if(chat.getSender().getId().equals(authentication.getName())){
