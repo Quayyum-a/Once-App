@@ -1,5 +1,6 @@
 package com.alibou.whatsappclone.message;
 
+import com.alibou.whatsappclone.file.FileUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,7 +15,7 @@ public class MessageMapper {
                 .senderId(message.getSenderId())
                 .receiverId(message.getReceiverId())
                 .createdDate(message.getCreatedDate())
-                // todo read the media file
+                .media(FileUtils.readFileFromLocation(message.getMediaFilePath()))
                 .build();
     }
 
